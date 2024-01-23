@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Library App</h1>
+
+    <div>
+        <h2>Register</h2>
+        <label for="register-username">Username:</label>
+        <input type="text" id="register-username" placeholder="Enter your username">
+        <br>
+        <label for="register-password">Password:</label>
+        <input type="password" id="register-password" placeholder="Enter your password">
+        <br>
+        <label for="register-name">Name:</label>
+        <input type="text" id="register-name" placeholder="Enter your name">
+        <br>
+        <label for="register-city">City:</label>
+        <input type="text" id="register-city" placeholder="Enter your city">
+        <br>
+        <label for="register-age">Age:</label>
+        <input type="number" id="register-age" placeholder="Enter your age">
+        <br>
+        <label for="register-is-librarian">Are you a librarian?</label>
+        <input type="checkbox" id="register-is-librarian">
+        <br>
+        <button onclick="register()">Register</button>
+    </div>
+
+    <div>
+        <h2>Login</h2>
+        <label for="login-username">Username:</label>
+        <input type="text" id="login-username" placeholder="Enter your username">
+        <br>
+        <label for="login-password">Password:</label>
+        <input type="password" id="login-password" placeholder="Enter your password">
+        <br>
+        <button onclick="login()">Login</button>
+    </div>
+
+    <div>
+        <h2>Search Books</h2>
+        <label for="search-book">Search Book:</label>
+        <input type="text" id="search-book" placeholder="Enter book name">
+        <br>
+        <button onclick="searchBook()">Search</button>
+        <div id="search-results"></div>
+    </div>
+
+    <div id="add-book-section">
+        <h2>Add Book</h2>
+        <label for="add-book-name">Book Name:</label>
+        <input type="text" id="add-book-name" placeholder="Enter book name">
+        <label for="add-book-author">Author:</label>
+        <input type="text" id="add-book-author" placeholder="Enter author name">
+        <label for="add-book-year">Year Published:</label>
+        <input type="number" id="add-book-year" placeholder="Enter year">
+        <label for="add-book-type">Type (1/2/3):</label>
+        <input type="number" id="add-book-type" placeholder="Enter type">
+        
+        <!-- Input for Image -->
+        <label for="add-book-image">Book Image:</label>
+        <input type="file" id="add-book-image">
+        
+        <button onclick="addBook()">Add Book</button>
+    </div>
+    
+    <div id="loan-book-section">
+        <h2>Loan a Book</h2>
+        <label for="loan-book-name">Book Name:</label>
+        <input type="text" id="loan-book-name" placeholder="Enter book name">
+        <button onclick="loanBook()">Loan Book</button>
+    </div>
+
+    <div id="return-book-section">
+        <h2>Return a Book</h2>
+        <label for="return-book-name">Book Name:</label>
+        <input type="text" id="return-book-name" placeholder="Enter book name">
+        <button onclick="returnBook()">Return Book</button>
+    </div>
+    <div id="display-customers-section">
+        <h2>Display all customers</h2>
+        <button onclick="displayAllCustomers()">Display All Customers</button>
+        <div id="display-customers-results"></div>
+    </div>
+
+    <div id="display-loans-section">
+        <h2>Display all loans</h2>
+        <button onclick="displayAllLoans()">Display All Loans</button>
+        <div id="display-loans-results"></div>
+    </div>
+
+    <div id="display-late-loans-section">
+        <h2>Display late loans</h2>
+        <button onclick="displayLateLoans()">Display Late Loans</button>
+        <div id="display-late-loans-results"></div>
+    </div>
+
+    <div id="find-customer-section">
+        <h2>Find customer by name</h2>
+        <label for="find-customer-name">Customer Name:</label>
+        <input type="text" id="find-customer-name" placeholder="Enter customer name">
+        <button onclick="findCustomerByName()">Find Customer</button>
+        <div id="find-customer-results"></div>
+    </div>
+
+    <div id="remove-customer-section">
+        <h2>Remove customer</h2>
+        <label for="remove-customer-name">Customer Name:</label>
+        <input type="text" id="remove-customer-name" placeholder="Enter customer name">
+        <button onclick="removeCustomer()">Remove Customer</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="script.js"></script>
+
+
+
+</body>
+</html>

@@ -224,6 +224,8 @@ def delete_book(book_id):
     else:
         return jsonify({"message": "Book not found or unauthorized"}), 404
 
+from flask import request
+
 @app.route('/loan_book/<int:book_id>', methods=['POST'])
 @jwt_required()  # Use this decorator to ensure that the request is authenticated with a valid JWT token
 def loan_book(book_id):
@@ -267,11 +269,14 @@ def loan_book(book_id):
         db.session.add(new_loan)
         db.session.commit()
 
-        return jsonify({"message": "Book loan successful", "return_date": return_date}), 200
+        # Check if the loan is considered late based on a condition (e.g., return date within 2 days)
+        if return_date - datetime.utcnow() <= timedelta(days=2):
+            return jsonify({"message": "Book loan successful", "return_date": return_date, "late": True}), 200
+        else:
+            return jsonify({"message": "Book loan successful", "return_date": return_date, "late": False}), 200
 
     except Exception as e:
         return jsonify({"message": "Error processing book loan", "error": str(e)}), 500
-
 
 # Add this route to handle book returns
 
@@ -366,28 +371,28 @@ def get_all_loans():
         return jsonify({"message": "Error retrieving loans", "error": str(e)}), 500
 
 # Add this route to display late loans
-@app.route('/get_late_loans', methods=['GET'])
-def get_late_loans():
-    try:
-        # Query late loans from the database
-        late_loans = Loan.query.filter(Loan.Returndate < datetime.utcnow()).all()
+# @app.route('/get_late_loans', methods=['GET'])
+# def get_late_loans():
+#     try:
+#         # Query late loans from the database
+#         late_loans = Loan.query.filter(Loan.Returndate < datetime.utcnow()).all()
 
-        # Convert the late loans to a list of dictionaries for JSON response
-        late_loans_list = []
-        for loan in late_loans:
-            late_loan_data = {
-                'id': loan.id,
-                'book_id': loan.BookID,
-                'customer_id': loan.CustID,
-                'loan_date': loan.Loandate.strftime("%Y-%m-%d %H:%M:%S"),
-                'return_date': loan.Returndate.strftime("%Y-%m-%d %H:%M:%S") if loan.Returndate else None
-            }
-            late_loans_list.append(late_loan_data)
+#         # Convert the late loans to a list of dictionaries for JSON response
+#         late_loans_list = []
+#         for loan in late_loans:
+#             late_loan_data = {
+#                 'id': loan.id,
+#                 'book_id': loan.BookID,
+#                 'customer_id': loan.CustID,
+#                 'loan_date': loan.Loandate.strftime("%Y-%m-%d %H:%M:%S"),
+#                 'return_date': loan.Returndate.strftime("%Y-%m-%d %H:%M:%S") if loan.Returndate else None
+#             }
+#             late_loans_list.append(late_loan_data)
 
-        return jsonify({"late_loans": late_loans_list}), 200
+#         return jsonify({"late_loans": late_loans_list}), 200
 
-    except Exception as e:
-        return jsonify({"message": "Error retrieving late loans", "error": str(e)}), 500
+#     except Exception as e:
+#         return jsonify({"message": "Error retrieving late loans", "error": str(e)}), 500
 
 # Add this route to find a book by name
 @app.route('/find_book_by_name', methods=['GET'])

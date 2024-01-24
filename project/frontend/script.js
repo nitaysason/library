@@ -241,87 +241,172 @@ function deleteBook(bookId) {
     }
 }
     // // Find Customer By Name function
-    // function findCustomerByName() {
-    //     const customerName = document.getElementById('find-customer-name').value;
+    function findCustomerByName() {
+        const customerNameInput = document.getElementById('customerName');
+        const customerName = customerNameInput.value.trim();
 
-    //     makeRequest('GET', `find_customer_by_name?name=${customerName}`)
-    //         .then(response => {
-    //             console.log(response);
-    //             // Display search results in the 'find-customer-results' div
-    //             const findCustomerDiv = document.getElementById('find-customer-results');
-    //             findCustomerDiv.innerHTML = '';
+        if (!customerName) {
+            alert("Please enter a customer name.");
+            return;
+        }
 
-    //             response.found_customers.forEach(customer => {
-    //                 const customerDiv = document.createElement('div');
-    //                 customerDiv.innerHTML = `<strong>${customer.name}</strong> (${customer.username}) - Age: ${customer.age}, City: ${customer.city}`;
-    //                 findCustomerDiv.appendChild(customerDiv);
-    //             });
-    //         })
-    //         .catch(error => console.error(error));
-    // }
+        makeRequest('GET', `/find_customer_by_name?name=${encodeURIComponent(customerName)}`)
+            .then(response => {
+                console.log(response);
+                // Display found customers in the 'found-customers-results' div
+                const foundCustomersDiv = document.getElementById('found-customers-results');
+                foundCustomersDiv.innerHTML = '';
+
+                if (response.found_customers.length === 0) {
+                    foundCustomersDiv.innerHTML = 'No customers found.';
+                } else {
+                    response.found_customers.forEach(customer => {
+                        const customerDiv = document.createElement('div');
+                        customerDiv.innerHTML = `<strong>${customer.name}</strong> (${customer.username}) - City: ${customer.city}, Age: ${customer.age}`;
+                        foundCustomersDiv.appendChild(customerDiv);
+                    });
+                }
+            })
+            .catch(error => console.error(error));
+    }
+
+    // Define the findBookByName function
+    function findBookByName() {
+        const bookNameInput = document.getElementById('bookName');
+        const bookName = bookNameInput.value.trim();
+
+        if (!bookName) {
+            alert("Please enter a book name.");
+            return;
+        }
+
+        makeRequest('GET', `/find_book_by_name?name=${encodeURIComponent(bookName)}`)
+            .then(response => {
+                console.log(response);
+                // Display found books in the 'found-books-results' div
+                const foundBooksDiv = document.getElementById('found-books-results');
+                foundBooksDiv.innerHTML = '';
+
+                if (response.found_books.length === 0) {
+                    foundBooksDiv.innerHTML = 'No books found.';
+                } else {
+                    response.found_books.forEach(book => {
+                        const bookDiv = document.createElement('div');
+                        bookDiv.innerHTML = `<strong>${book.name}</strong> by ${book.author} - Year Published: ${book.year_published}`;
+                        foundBooksDiv.appendChild(bookDiv);
+                    });
+                }
+            })
+            .catch(error => console.error(error));
+    }
 
     // // Remove Customer function
-    // function removeCustomer() {
-    //     const customerName = document.getElementById('remove-customer-name').value;
+    function removeCustomer() {
+        const customerIdInput = document.getElementById('customerId');
+        const customerId = parseInt(customerIdInput.value);
 
-    //     makeRequest('POST', 'remove_customer', { name: customerName })
-    //         .then(response => {
-    //             console.log(response);
-    //             // Handle the response as needed
-    //         })
-    //         .catch(error => console.error(error));
-    // }
+        if (isNaN(customerId) || customerId <= 0) {
+            alert("Please enter a valid customer ID.");
+            return;
+        }
 
-    // // Display All Customers function
-    // function displayAllCustomers() {
-    //     makeRequest('GET', 'display_all_customers')
-    //         .then(response => {
-    //             console.log(response);
-    //             // Display customers in the 'display-customers-results' div
-    //             const displayCustomersDiv = document.getElementById('display-customers-results');
-    //             displayCustomersDiv.innerHTML = '';
+        makeRequest('DELETE', `/remove_customer/${customerId}`)
+            .then(response => {
+                console.log(response);
+                // Display the result in the 'remove-customer-results' div
+                const removeCustomerResultsDiv = document.getElementById('remove-customer-results');
+                removeCustomerResultsDiv.innerHTML = response.message;
+            })
+            .catch(error => console.error(error));
+    }
+    // Display All Customers function
+    function makeRequest(method, url) {
+        return fetch(`http://127.0.0.1:5000${url}`, {  // Update the base URL to match your Flask app
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        });
+    }
 
-    //             response.customers.forEach(customer => {
-    //                 const customerDiv = document.createElement('div');
-    //                 customerDiv.innerHTML = `<strong>${customer.name}</strong> (${customer.username}) - Age: ${customer.age}, City: ${customer.city}`;
-    //                 displayCustomersDiv.appendChild(customerDiv);
-    //             });
-    //         })
-    //         .catch(error => console.error(error));
-    // }
+    // Define the displayAllCustomers function
+    function displayAllCustomers() {
+        makeRequest('GET', '/display_all_customers')
+            .then(response => {
+                console.log(response);
+                // Display customers in the 'display-customers-results' div
+                const displayCustomersDiv = document.getElementById('display-customers-results');
+                displayCustomersDiv.innerHTML = '';
+
+                response.customers.forEach(customer => {
+                    const customerDiv = document.createElement('div');
+                    customerDiv.innerHTML = `<strong>${customer.name}</strong> (${customer.username}) - Age: ${customer.age}, City: ${customer.city}`;
+                    displayCustomersDiv.appendChild(customerDiv);
+                });
+            })
+            .catch(error => console.error(error));
+    }
 
     // // Display All Loans function
-    // function displayAllLoans() {
-    //     makeRequest('GET', 'display_all_loans')
-    //         .then(response => {
-    //             console.log(response);
-    //             // Display loans in the 'display-loans-results' div
-    //             const displayLoansDiv = document.getElementById('display-loans-results');
-    //             displayLoansDiv.innerHTML = '';
+   
 
-    //             response.loans.forEach(loan => {
-    //                 const loanDiv = document.createElement('div');
-    //                 loanDiv.innerHTML = `<strong>${loan.book_name}</strong> - Loaned to: ${loan.customer_name}, Due Date: ${loan.due_date}`;
-    //                 displayLoansDiv.appendChild(loanDiv);
-    //             });
-    //         })
-    //         .catch(error => console.error(error));
+    // Define the displayAllLoans function
+    // function makeRequest(method, url) {
+    //     return fetch(`http://127.0.0.1:5000${url}`, {
+    //         method: method,
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //     })
+    //     .then(response => {
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error! Status: ${response.status}`);
+    //         }
+    //         return response.json();
+    //     });
     // }
 
+    // Define the displayAllLoans function
+    function displayAllLoans() {
+        makeRequest('GET', '/get_all_loans')
+            .then(response => {
+                console.log(response);
+                // Display book ID, customer ID, and loan date in the 'display-loans-results' div
+                const displayLoansDiv = document.getElementById('display-loans-results');
+                displayLoansDiv.innerHTML = '';
+
+                response.loans.forEach(loan => {
+                    const loanDiv = document.createElement('div');
+                    loanDiv.innerHTML = `Book ID: ${loan.book_id}, Customer ID: ${loan.customer_id}, Loan Date: ${loan.loan_date}`;
+                    displayLoansDiv.appendChild(loanDiv);
+                });
+            })
+            .catch(error => console.error(error));
+    }
     // // Display Late Loans function
-    // function displayLateLoans() {
-    //     makeRequest('GET', 'display_late_loans')
-    //         .then(response => {
-    //             console.log(response);
-    //             // Display late loans in the 'display-late-loans-results' div
-    //             const displayLateLoansDiv = document.getElementById('display-late-loans-results');
-    //             displayLateLoansDiv.innerHTML = '';
+    function getLateLoans() {
+        makeRequest('GET', '/get_late_loans')
+            .then(response => {
+                console.log(response);
+                // Display late loans in the 'late-loans-results' div
+                const lateLoansDiv = document.getElementById('late-loans-results');
+                lateLoansDiv.innerHTML = '';
 
-    //             response.late_loans.forEach(loan => {
-    //                 const lateLoanDiv = document.createElement('div');
-    //                 lateLoanDiv.innerHTML = `<strong>${loan.book_name}</strong> - Loaned to: ${loan.customer_name}, Due Date: ${loan.due_date}`;
-    //                 displayLateLoansDiv.appendChild(lateLoanDiv);
-    //             });
-    //         })
-    //         .catch(error => console.error(error));
-    // }
+                if (response.late_loans.length === 0) {
+                    lateLoansDiv.innerHTML = 'No late loans found.';
+                } else {
+                    response.late_loans.forEach(loan => {
+                        const loanDiv = document.createElement('div');
+                        loanDiv.innerHTML = `<strong>Loan ID:</strong> ${loan.id}, <strong>Book ID:</strong> ${loan.book_id}, <strong>Customer ID:</strong> ${loan.customer_id}, <strong>Loan Date:</strong> ${loan.loan_date}, <strong>Return Date:</strong> ${loan.return_date || 'Not returned'}`;
+                        lateLoansDiv.appendChild(loanDiv);
+                    });
+                }
+            })
+            .catch(error => console.error(error));
+    }

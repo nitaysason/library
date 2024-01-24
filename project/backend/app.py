@@ -260,7 +260,7 @@ def loan_book(book_id):
         return_date = datetime.utcnow() + timedelta(days=max_loan_days)
 
         # Create a new loan record
-        new_loan = Loan(BookID=book_id, CustID=current_user_id, Loandate=datetime.utcnow(), Returndate=return_date)
+        new_loan = Loan(BookID=book_id, CustID=current_user_id, Loandate=datetime.utcnow())
 
         # Add the book and loan to the database
         db.session.add(book)
@@ -453,7 +453,6 @@ def find_customer_by_name():
     
 # Add this route to remove a customer by ID
 @app.route('/remove_customer/<int:customer_id>', methods=['DELETE'])
-@jwt_required()  # Use this decorator to ensure that the request is authenticated with a valid JWT token
 def remove_customer(customer_id):
     try:
         # Find the customer by ID
@@ -462,11 +461,6 @@ def remove_customer(customer_id):
         # Check if the customer exists
         if not customer:
             return jsonify({"message": "Customer not found"}), 404
-
-        # Ensure that the user making the request is an administrator or the owner of the customer account
-        current_user_id = get_jwt_identity()
-        if not customer.is_librarian and current_user_id != customer.id:
-            return jsonify({"message": "You are not authorized to remove this customer"}), 403
 
         # Delete the customer from the database
         db.session.delete(customer)

@@ -179,66 +179,50 @@ def add_book():
 
 
 # Add this route to update a book
-@app.route('/update_book/<int:book_id>', methods=['PUT'])
-@jwt_required()  # Use this decorator to ensure that the request is authenticated with a valid JWT token
+
+@app.route('/books/<int:book_id>', methods=['PUT'])
+@jwt_required()
 def update_book(book_id):
-    try:
-        # Get data from the request
-        data = request.get_json()
+    current_user = get_jwt_identity()
+    user = Customer.query.get(current_user)
+    book = Book.query.get(book_id)
 
-        # Find the book by ID
-        book = Book.query.get(book_id)
-
-        # Check if the book exists
-        if not book:
-            return jsonify({"message": "Book not found"}), 404
-
-        # Ensure that the user making the request is the owner of the book
-        current_user_id = get_jwt_identity()
-        if book.user_id != current_user_id:
-            return jsonify({"message": "You are not authorized to update this book"}), 403
-
-        # Update book details
-        book.name = data.get('name', book.name)
-        book.author = data.get('author', book.author)
-        book.year_published = data.get('year_published', book.year_published)
-        book.book_type = data.get('book_type', book.book_type)
-        book.image = data.get('image', book.image)
-
-        # Commit changes to the database
-        db.session.commit()
-
-        return jsonify({"message": "Book updated successfully"}), 200
-
-    except Exception as e:
-        return jsonify({"message": "Error updating book", "error": str(e)}), 500
+    # Check if the current user is a librarian and the book exists
+    if user.is_librarian and book:
+        # Check if the book is currently taken by any user
+        if book.user_id is None:
+            data = request.get_json()
+            book.name = data['name']
+            book.author = data['author']
+            book.year_published = data['year_published']
+            book.book_type = data['book_type']
+            db.session.commit()
+            return jsonify({"message": "Book updated successfully"})
+        else:
+            return jsonify({"message": "Cannot update the book. It is currently taken by a user."}), 400
+    else:
+        return jsonify({"message": "Book not found or unauthorized"}), 404
 
 
 # Add this route to delete a book
-@app.route('/delete_book/<int:book_id>', methods=['DELETE'])
-@jwt_required()  # Use this decorator to ensure that the request is authenticated with a valid JWT token
+@app.route('/books/<int:book_id>', methods=['DELETE'])
+@jwt_required()
 def delete_book(book_id):
-    try:
-        # Find the book by ID
-        book = Book.query.get(book_id)
+    current_user = get_jwt_identity()
+    user = Customer.query.get(current_user)
+    book = Book.query.get(book_id)
 
-        # Check if the book exists
-        if not book:
-            return jsonify({"message": "Book not found"}), 404
-
-        # Ensure that the user making the request is the owner of the book
-        current_user_id = get_jwt_identity()
-        if book.user_id != current_user_id:
-            return jsonify({"message": "You are not authorized to delete this book"}), 403
-
-        # Delete the book from the database
-        db.session.delete(book)
-        db.session.commit()
-
-        return jsonify({"message": "Book deleted successfully"}), 200
-
-    except Exception as e:
-        return jsonify({"message": "Error deleting book", "error": str(e)}), 500
+    # Check if the current user is a librarian and the book exists
+    if user.is_librarian and book:
+        # Check if the book is currently taken by any user
+        if book.user_id is None:
+            db.session.delete(book)
+            db.session.commit()
+            return jsonify({"message": "Book deleted successfully"})
+        else:
+            return jsonify({"message": "Cannot delete the book. It is currently taken by a user."}), 400
+    else:
+        return jsonify({"message": "Book not found or unauthorized"}), 404
 
 @app.route('/loan_book/<int:book_id>', methods=['POST'])
 @jwt_required()  # Use this decorator to ensure that the request is authenticated with a valid JWT token
@@ -290,6 +274,8 @@ def loan_book(book_id):
 
 
 # Add this route to handle book returns
+
+
 @app.route('/return_book/<int:book_id>', methods=['POST'])
 @jwt_required()  # Use this decorator to ensure that the request is authenticated with a valid JWT token
 def return_book(book_id):
@@ -323,10 +309,11 @@ def return_book(book_id):
         # Commit changes to the database
         db.session.commit()
 
-        return jsonify({"message": "Book return successful"}), 200
+        return jsonify({"message": "Book return successful", "return_date": loan.Returndate}), 200
 
     except Exception as e:
         return jsonify({"message": "Error processing book return", "error": str(e)}), 500
+
     
     # Add this route to display all customers
 @app.route('/display_all_customers', methods=['GET'])

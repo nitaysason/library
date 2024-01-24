@@ -85,7 +85,6 @@ async function register() {
     }
 }
 
-
 async function fetchBooks() {
     try {
         const response = await axios.get(`${baseUrl}/get_all_books`);
@@ -109,7 +108,6 @@ async function fetchBooks() {
         console.error('Error fetching books:', error.response ? error.response.data.message : error.message);
     }
 }
-
 
 async function addBook() {
     try {
@@ -147,7 +145,7 @@ async function addBook() {
         if (response.data.message) {
             // Handle success (e.g., show a success message)
             alert('Book added successfully!');
-            fetchBooks(); // Update book list after successful addition
+            fetchBooks(); // Update book list after a successful addition
         } else if (response.data.error) {
             // Handle error with more details (e.g., show an error message with details)
             console.error(response.data.error);
@@ -168,38 +166,80 @@ async function addBook() {
     }
 }
 
+// Function to update a book
+function updateBook(bookId) {
+    const newName = prompt('Enter new name:');
+    const newAuthor = prompt('Enter new author:');
+    const year_published = prompt('Enter new year_published:');
+    const book_type = prompt('Enter new Book_type:');
+    axios.put(`${baseUrl}/books/${bookId}`, { name: newName, author: newAuthor,year_published:year_published,book_type:book_type })
+        .then(response => {
+            console.log(response.data.message);
+            fetchBooks();
+        })
+        .catch(error => {
+            console.error('Error updating book:', error.response ? error.response.data.message : error.message);
+            alert(' Cannot update the book. It is currently taken by a user');
+        });
+}
 
+function deleteBook(bookId) {
+    const confirmDelete = confirm('Are you sure you want to delete this book?');
+    if (confirmDelete) {
+        axios.delete(`${baseUrl}/books/${bookId}`)
+            .then(response => {
+                console.log(response.data.message);
+                fetchBooks();
+            })
+            .catch(error => {
+                console.error('Error deleting book:', error.response ? error.response.data.message : error.message);
+                alert(' Cannot delete the book. It is currently taken by a user');
+            });
+    }
+}
+    // Loan Book function
+ function takeBook(bookId) {
+    axios.post(`${baseUrl}/loan_book/${bookId}`)
+        .then(response => {
+            console.log(response.data.message);
+            fetchBooks();
+        })
+        .catch(error => {
+            console.error('Error taking book:', error.response ? error.response.data.message : error.message);
+            alert('book alredy taken');
+        });
+}
+    // Return Book function
+   async function returnBook(bookId) {
+    try {
+        // Fetch API to make a POST request to the return_book endpoint
+        const response = await fetch(`${baseUrl}/return_book/${bookId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + authToken, // Use the stored authToken
+            },
+        });
 
-    // // Loan Book function
-    // function loanBook() {
-    //     const bookName = document.getElementById('loan-book-name').value;
+        // Parse the JSON response
+        const result = await response.json();
 
-    //     // Get the JWT token from localStorage (assuming you stored it after login)
-    //     const token = localStorage.getItem('jwt_token');
-
-    //     makeRequest('POST', 'loan_book', { name: bookName }, token)
-    //         .then(response => {
-    //             console.log(response);
-    //             // Handle the response as needed
-    //         })
-    //         .catch(error => console.error(error));
-    // }
-
-    // // Return Book function
-    // function returnBook() {
-    //     const bookName = document.getElementById('return-book-name').value;
-
-    //     // Get the JWT token from localStorage (assuming you stored it after login)
-    //     const token = localStorage.getItem('jwt_token');
-
-    //     makeRequest('POST', 'return_book', { name: bookName }, token)
-    //         .then(response => {
-    //             console.log(response);
-    //             // Handle the response as needed
-    //         })
-    //         .catch(error => console.error(error));
-    // }
-
+        // Check if the request was successful
+        if (response.ok) {
+            console.log(result.message);
+            // Perform any additional actions on success
+            fetchBooks(); // Example: Update book list after successful return
+        } else {
+            console.error(result.message);
+            // Handle errors appropriately
+            // You may want to display an error message to the user
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        // Handle network or other errors
+        // You may want to display an error message to the user
+    }
+}
     // // Find Customer By Name function
     // function findCustomerByName() {
     //     const customerName = document.getElementById('find-customer-name').value;

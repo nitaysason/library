@@ -1,8 +1,9 @@
 from datetime import datetime
+import os
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+from flask_jwt_extended import JWTManager, get_current_user, jwt_required, create_access_token, get_jwt_identity
 from flask_bcrypt import Bcrypt
 from datetime import timedelta
 
@@ -58,25 +59,29 @@ with app.app_context():
 # Routes
 
 # User Routes
-# Add this route to handle user registration
+
+from flask import jsonify
+
 @app.route('/register', methods=['POST'])
 def register():
     try:
         data = request.get_json()
 
-        # Extract registration details
-        username = data.get('username')
-        password = data.get('password')
-        name = data.get('name')
-        city = data.get('city')
-        age = data.get('age')
-        is_librarian = data.get('is_librarian', False)  # Default to False if not provided
-
         # Hash the password
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
+
+        # Determine is_librarian based on a condition (e.g., username contains 'librarian')
+        is_librarian = 'librarian' in data['username'].lower()
 
         # Create a new user instance
-        new_user = Customer(username=username, password=hashed_password, name=name, city=city, age=age, is_librarian=is_librarian)
+        new_user = Customer(
+            username=data['username'],
+            password=hashed_password,
+            name=data.get('name'),
+            city=data.get('city'),
+            age=data.get('age'),
+            is_librarian=is_librarian
+        )
 
         # Add the user to the database
         db.session.add(new_user)
@@ -86,7 +91,6 @@ def register():
 
     except Exception as e:
         return jsonify({"message": "Error registering user", "error": str(e)}), 500
-
 
 
 @app.route('/login', methods=['POST'])
@@ -128,9 +132,16 @@ def get_all_books():
 
 # Add this route to add a new book
 
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}  # Specify the allowed file extensions
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/add_book', methods=['POST'])
-@jwt_required()  
+@jwt_required()
 def add_book():
     try:
         # Get data from the request
@@ -140,22 +151,31 @@ def add_book():
         name = data.get('name')
         author = data.get('author')
         year_published = data.get('year_published')
-        book_type = data.get('type')  # Update to match the key in your FormData
-        image = data.get('image')
-        user_id = get_jwt_identity()  
+        book_type = data.get('book_type')  # Update to match the key in your FormData
+        user_id = get_jwt_identity()
+
+        # Get the uploaded image file
+        image = request.files.get('image')
+
+        # Check if the file is allowed
+        if image and allowed_file(image.filename):
+            # Save the file to the uploads folder
+            filename = os.path.join(app.config['UPLOAD_FOLDER'], image.filename)
+            image.save(filename)
+        else:
+            return jsonify({"error": "Invalid file format"}), 400
 
         # Create a new book instance
-        new_book = Book(name=name, author=author, year_published=year_published, book_type=book_type, image=image, user_id=user_id)
-        
+        new_book = Book(name=name, author=author, year_published=year_published, book_type=book_type, image=filename)
+
         # Add the book to the database
         db.session.add(new_book)
         db.session.commit()
 
         return jsonify({"message": "Book added successfully"}), 201
-    
+
     except Exception as e:
         return jsonify({"error": f"Error adding book: {str(e)}"}), 500
-
 
 
 # Add this route to update a book

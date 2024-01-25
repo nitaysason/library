@@ -355,24 +355,6 @@ function deleteBook(bookId) {
 
     // // Display All Loans function
    
-
-    // Define the displayAllLoans function
-    // function makeRequest(method, url) {
-    //     return fetch(`http://127.0.0.1:5000${url}`, {
-    //         method: method,
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //     })
-    //     .then(response => {
-    //         if (!response.ok) {
-    //             throw new Error(`HTTP error! Status: ${response.status}`);
-    //         }
-    //         return response.json();
-    //     });
-    // }
-
-    // Define the displayAllLoans function
     function displayAllLoans() {
         makeRequest('GET', '/get_all_loans')
             .then(response => {
@@ -390,23 +372,23 @@ function deleteBook(bookId) {
             .catch(error => console.error(error));
     }
     // // Display Late Loans function
-    // function getLateLoans() {
-    //     makeRequest('GET', '/get_late_loans')
-    //         .then(response => {
-    //             console.log(response);
-    //             // Display late loans in the 'late-loans-results' div
-    //             const lateLoansDiv = document.getElementById('late-loans-results');
-    //             lateLoansDiv.innerHTML = '';
+    function getLateLoans() {
+        makeRequest('GET', '/get_late_loans')
+            .then(response => {
+                console.log(response);
+                // Display late loans in the 'late-loans-results' div
+                const lateLoansDiv = document.getElementById('late-loans-results');
+                lateLoansDiv.innerHTML = '';
 
-    //             if (response.late_loans.length === 0) {
-    //                 lateLoansDiv.innerHTML = 'No late loans found.';
-    //             } else {
-    //                 response.late_loans.forEach(loan => {
-    //                     const loanDiv = document.createElement('div');
-    //                     loanDiv.innerHTML = `<strong>Loan ID:</strong> ${loan.id}, <strong>Book ID:</strong> ${loan.book_id}, <strong>Customer ID:</strong> ${loan.customer_id}, <strong>Loan Date:</strong> ${loan.loan_date}, <strong>Return Date:</strong> ${loan.return_date || 'Not returned'}`;
-    //                     lateLoansDiv.appendChild(loanDiv);
-    //                 });
-    //             }
-    //         })
-    //         .catch(error => console.error(error));
-    // }
+                if (response.late_loans.length === 0) {
+                    lateLoansDiv.innerHTML = 'No late loans found.';
+                } else {
+                    response.late_loans.forEach(loan => {
+                        const loanDiv = document.createElement('div');
+                        loanDiv.innerHTML = `<strong>Loan ID:</strong> ${loan.id}, <strong>Book ID:</strong> ${loan.book_id}, <strong>Customer ID:</strong> ${loan.customer_id}, <strong>Loan Date:</strong> ${loan.loan_date}, <strong>Return Date:</strong> ${loan.return_date || 'Not returned'}`;
+                        lateLoansDiv.appendChild(loanDiv);
+                    });
+                }
+            })
+            .catch(error => console.error(error));
+    }

@@ -29,6 +29,29 @@
                 <label for="add-book-image">Book Image:</label>
                 <input type="file" id="add-book-image" required>
                 <button onclick="addBook()">Add Book</button>
+                <button onclick="displayAllCustomers()">Display All Customers</button>
+                <div id="display-customers-results"></div>
+        
+                <button onclick="displayAllLoans()">Display All Loans</button>
+                <div id="display-loans-results"></div>
+        
+                <label for="bookName">Enter Book Name:</label>
+                <input type="text" id="bookName" placeholder="Type book name">
+                <button onclick="findBookByName()">Find Books</button>
+                <div id="found-books-results"></div>
+        
+                <label for="customerName">Enter Customer Name:</label>
+                <input type="text" id="customerName" placeholder="Type customer name">
+                <button onclick="findCustomerByName()">Find Customers</button>
+                <div id="found-customers-results"></div>
+        
+                <label for="customerId">Enter Customer ID:</label>
+                <input type="number" id="customerId" placeholder="Type customer ID">
+                <button onclick="removeCustomer()">Remove Customer</button>
+                <div id="remove-customer-results"></div>
+        
+                <button onclick="getLateLoans()">Get Late Loans</button>
+                <div id="late-loans-results"></div>
             </div>
         </div>
 
@@ -44,29 +67,7 @@
                 style="background-color: blue;">Register</button>
 
         </div>
-        <button onclick="displayAllCustomers()">Display All Customers</button>
-        <div id="display-customers-results"></div>
-
-        <button onclick="displayAllLoans()">Display All Loans</button>
-        <div id="display-loans-results"></div>
-
-        <label for="bookName">Enter Book Name:</label>
-        <input type="text" id="bookName" placeholder="Type book name">
-        <button onclick="findBookByName()">Find Books</button>
-        <div id="found-books-results"></div>
-
-        <label for="customerName">Enter Customer Name:</label>
-        <input type="text" id="customerName" placeholder="Type customer name">
-        <button onclick="findCustomerByName()">Find Customers</button>
-        <div id="found-customers-results"></div>
-
-        <label for="customerId">Enter Customer ID:</label>
-        <input type="number" id="customerId" placeholder="Type customer ID">
-        <button onclick="removeCustomer()">Remove Customer</button>
-        <div id="remove-customer-results"></div>
-
-        <!-- <button onclick="getLateLoans()">Get Late Loans</button>
-        <div id="late-loans-results"></div> -->
+   
 
         <!-- Registration Form -->
         <div id="registrationForm" style="display: none;">

@@ -1,42 +1,116 @@
-# Library Management App
+# Flask Library Management System
 
-A simple library management system implemented using Flask, SQLAlchemy, and JWT authentication.
+A simple Flask application for managing a library system with user registration, book management, and loan tracking features. The application provides basic CRUD (Create, Read, Update, Delete) operations for users and books.
 
-## Overview
+## CRUD Functionality
 
-This Flask application provides a basic library management system with user registration, login, and book management features. Users can register, log in and take and return books.
- Librarians can add books, update book details, and delete books. 
+### Users
 
-## Features
+- **Create User:**
+  - Endpoint: `/register`
+  - Method: `POST`
+  - Description: Register a new user.
 
-- **User Registration:** Users can register with a unique username and password.
+- **Read User:**
+  - Endpoint: `/display_all_customers`
+  - Method: `GET`
+  - Description: Get information about all registered customers.
 
-- **User Login:** Registered users can log in securely to access the system.
+- **Update User:**
+  - Endpoint: `/users/{user_id}`
+  - Method: `PUT`
+  - Description: Update information about a user.
 
-- **Book Management:**
-  - **Get All Books:** Retrieve a list of all books in the library.
-  - **Add Book:** Librarians can add new books to the library.
-  - **Update Book:** Librarians can update the details of existing books.
-  - **Delete Book:** Librarians can remove books from the library.
+- **Delete User:**
+  - Endpoint: `/remove_customer/{customer_id}`
+  - Method: `DELETE`
+  - Description: Remove a customer from the system.
 
-- **Book Transactions:**
-  - **Take Book:** Users (non-librarians) can take books, and the system records the transaction.
-  - **Return Book:** Users (non-librarians) can return books, and the system records the transaction.
+### Books
+
+- **Create Book:**
+  - Endpoint: `/add_book`
+  - Method: `POST`
+  - Description: Add a new book to the library.
+
+- **Read Books:**
+  - Endpoint: `/get_all_books`
+  - Method: `GET`
+  - Description: Get information about all books.
+
+- **Update Book:**
+  - Endpoint: `/books/{book_id}`
+  - Method: `PUT`
+  - Description: Update information about a book.
+
+- **Delete Book:**
+  - Endpoint: `/books/{book_id}`
+  - Method: `DELETE`
+  - Description: Delete a book from the library.
+
+### Loans
+
+- **Loan Book:**
+  - Endpoint: `/loan_book/{book_id}`
+  - Method: `POST`
+  - Description: Loan a book to a user.
+
+- **Return Book:**
+  - Endpoint: `/return_book/{book_id}`
+  - Method: `POST`
+  - Description: Return a previously loaned book.
+
+- **Get All Loans:**
+  - Endpoint: `/get_all_loans`
+  - Method: `GET`
+  - Description: Get information about all book loans.
+
+- **Get Late Loans:**
+  - Endpoint: `/get_late_loans`
+  - Method: `GET`
+  - Description: Get information about late book loans.
 
 ## Prerequisites
 
-Make sure you have the following installed:
-
-- Python (3.6 or higher)
+- Python 3.x
 - Flask
-- Flask-SQLAlchemy
-- Flask-CORS
-- Flask-JWT-Extended
-- Flask-Bcrypt
+- Flask SQLAlchemy
+- Flask CORS
+- Flask JWT Extended
+- Flask Bcrypt
 
-## Setup
+## Installation
 
 1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/nitaysason/project.git
+    ```bash
+    git clone https://github.com/nitaysason/library.git
+    cd flask-library-management
+    ```
+
+2. Install dependencies:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+3. Set up the database:
+
+    ```bash
+    python
+    from app import db
+    db.create_all()
+    exit()
+    ```
+
+## Usage
+
+1. Run the Flask application:
+
+    ```bash
+    python app.py
+    ```
+
+2. Access the application at [http://localhost:5000](http://localhost:5000).
+
+

@@ -380,11 +380,13 @@ function deleteBook(bookId) {
                 // Display late loans in the 'late-loans-results' div
                 const lateLoansDiv = document.getElementById('late-loans-results');
                 lateLoansDiv.innerHTML = '';
-
-                if (response.late_loans.length === 0) {
+    
+                const lateLoans = response.late_loans.filter(loan => loan.return_date === null);
+    
+                if (lateLoans.length === 0) {
                     lateLoansDiv.innerHTML = 'No late loans found.';
                 } else {
-                    response.late_loans.forEach(loan => {
+                    lateLoans.forEach(loan => {
                         const loanDiv = document.createElement('div');
                         loanDiv.innerHTML = `<strong>Loan ID:</strong> ${loan.id}, <strong>Book ID:</strong> ${loan.book_id}, <strong>Customer ID:</strong> ${loan.customer_id}, <strong>Loan Date:</strong> ${loan.loan_date}, <strong>Return Date:</strong> ${loan.return_date || 'Not returned'}`;
                         lateLoansDiv.appendChild(loanDiv);
@@ -393,3 +395,4 @@ function deleteBook(bookId) {
             })
             .catch(error => console.error(error));
     }
+    

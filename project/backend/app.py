@@ -60,7 +60,6 @@ with app.app_context():
 
 # User Routes
 
-from flask import jsonify
 
 @app.route('/register', methods=['POST'])
 def register():

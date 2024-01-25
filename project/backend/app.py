@@ -1,11 +1,12 @@
 from datetime import datetime
 import os
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, get_current_user, jwt_required, create_access_token, get_jwt_identity
 from flask_bcrypt import Bcrypt
 from datetime import timedelta
+
 
 app = Flask(__name__)
 CORS(app)
@@ -475,7 +476,9 @@ def remove_customer(customer_id):
     except Exception as e:
         return jsonify({"message": "Error removing customer", "error": str(e)}), 500
 
-
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],filename)
 
 if __name__ == '__main__':
     app.run(debug=True)

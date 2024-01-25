@@ -93,10 +93,13 @@ async function fetchBooks() {
 
         response.data.books.forEach(book => {
             const listItem = document.createElement('li');
+            const imageSrc = book.image ? `http://localhost:5000/${book.image}` : 'N/A';
             listItem.innerHTML = `
                 <strong>ID:</strong> ${book.id} 
                 <strong>Title:</strong> ${book.name} 
                 <strong>Author:</strong> ${book.author} 
+                <strong>Image:</strong> 
+                ${book.image ? `<img src='${imageSrc}' style='max-width: 50px; max-height: 50px;'>` : 'N/A'}
                 ${isLibrarian ? '<button class="update-button" onclick="updateBook(' + book.id + ')">Update</button>' : ''} 
                 ${isLibrarian ? '<button class="delete-button" onclick="deleteBook(' + book.id + ')" style="background-color: red;">Delete</button>' : ''}
                 ${!isLibrarian ? '<button class="take-button" onclick="takeBook(' + book.id + ')">Take Book</button>' : ''}

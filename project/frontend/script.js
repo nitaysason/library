@@ -98,9 +98,10 @@ async function fetchBooks() {
                 <strong>Title:</strong> ${book.name} 
                 <strong>Author:</strong> ${book.author} 
                 ${isLibrarian ? '<button class="update-button" onclick="updateBook(' + book.id + ')">Update</button>' : ''} 
-                ${isLibrarian ? '<button class="delete-button" onclick="deleteBook(' + book.id + ')">Delete</button>' : ''}
+                ${isLibrarian ? '<button class="delete-button" onclick="deleteBook(' + book.id + ')" style="background-color: red;">Delete</button>' : ''}
                 ${!isLibrarian ? '<button class="take-button" onclick="takeBook(' + book.id + ')">Take Book</button>' : ''}
-                ${!isLibrarian ? '<button class="return-button" onclick="returnBook(' + book.id + ')">Return Book</button>' : ''}
+                ${!isLibrarian ? '<button class="return-button" onclick="returnBook(' + book.id + ')" style="background-color: blue;">Return Book</button>' : ''}
+
             `;
             bookList.appendChild(listItem);
         });

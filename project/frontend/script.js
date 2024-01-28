@@ -408,7 +408,7 @@ function deleteBook(bookId) {
                     lateLoans.forEach(loan => {
                         const loanDiv = document.createElement('div');
                         const returnDateInfo = loan.return_date ? `, <strong>Return Date:</strong> ${loan.return_date}` : '<strong>Return Date:</strong> Not returned';
-                        const daysLateInfo = `, <strong>Days Late:</strong> ${loan.days_late}`;
+                        const daysLateInfo = loan.days_late !== null ? `, <strong>Days Late:</strong> ${loan.days_late}` : '';
                         loanDiv.innerHTML = `<strong>Loan ID:</strong> ${loan.id}, <strong>Book ID:</strong> ${loan.book_id}, <strong>Customer ID:</strong> ${loan.customer_id}, <strong>Loan Date:</strong> ${loan.loan_date}${returnDateInfo}${daysLateInfo}`;
                         lateLoansDiv.appendChild(loanDiv);
                     });

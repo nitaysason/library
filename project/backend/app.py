@@ -372,6 +372,8 @@ def get_all_loans():
 
 
 # Add this route to display late loans
+
+
 @app.route('/get_late_loans', methods=['GET'])
 def get_late_loans():
     try:
@@ -381,12 +383,16 @@ def get_late_loans():
         # Convert the late loans to a list of dictionaries for JSON response
         late_loans_list = []
         for loan in late_loans:
+            # Calculate days late
+            days_late = (datetime.utcnow() - loan.Returndate).days if loan.Returndate else None
+
             late_loan_data = {
                 'id': loan.id,
                 'book_id': loan.BookID,
                 'customer_id': loan.CustID,
                 'loan_date': loan.Loandate.strftime("%Y-%m-%d %H:%M:%S"),
-                'return_date': loan.Returndate.strftime("%Y-%m-%d %H:%M:%S") if loan.Returndate else None
+                'return_date': loan.Returndate.strftime("%Y-%m-%d %H:%M:%S") if loan.Returndate else None,
+                'days_late': days_late
             }
             late_loans_list.append(late_loan_data)
 
@@ -394,6 +400,7 @@ def get_late_loans():
 
     except Exception as e:
         return jsonify({"message": "Error retrieving late loans", "error": str(e)}), 500
+
 
 # Add this route to find a book by name
 @app.route('/find_book_by_name', methods=['GET'])

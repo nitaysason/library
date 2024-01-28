@@ -366,16 +366,19 @@ function deleteBook(bookId) {
                 // Log the response to the console
                 console.log(response);
     
-                // Display book ID, customer ID, loan date, and return date in the 'display-loans-results' div
+                // Display book ID, customer ID, loan date, return date, and late days in the 'display-loans-results' div
                 const displayLoansDiv = document.getElementById('display-loans-results');
                 displayLoansDiv.innerHTML = '';
     
                 // Iterate over each loan in the response and create a div for display
                 response.loans.forEach(loan => {
                     const loanDiv = document.createElement('div');
-                    // Set the innerHTML of the loanDiv with loan information including return date
+    
+                    // Set the innerHTML of the loanDiv with loan information including return date and late days
                     const returnDateInfo = loan.return_date ? `, Return Date: ${loan.return_date}` : '';
-                    loanDiv.innerHTML = `Book ID: ${loan.book_id}, Customer ID: ${loan.customer_id}, Loan Date: ${loan.loan_date}${returnDateInfo}`;
+                    const lateDaysInfo = loan.late_days !== null ? `, Late Days: ${loan.late_days}` : '';
+                    loanDiv.innerHTML = `Book ID: ${loan.book_id}, Customer ID: ${loan.customer_id}, Loan Date: ${loan.loan_date}${returnDateInfo}${lateDaysInfo}`;
+    
                     // Append the loanDiv to the displayLoansDiv
                     displayLoansDiv.appendChild(loanDiv);
                 });

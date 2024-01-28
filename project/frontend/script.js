@@ -360,26 +360,42 @@ function deleteBook(bookId) {
     // // Display All Loans function
    
     function displayAllLoans() {
+        // Make a GET request to the '/get_all_loans' endpoint
         makeRequest('GET', '/get_all_loans')
             .then(response => {
+                // Log the response to the console
                 console.log(response);
-                // Display book ID, customer ID, and loan date in the 'display-loans-results' div
+    
+                // Display book ID, customer ID, loan date, and return date in the 'display-loans-results' div
                 const displayLoansDiv = document.getElementById('display-loans-results');
                 displayLoansDiv.innerHTML = '';
-
+    
+                // Iterate over each loan in the response and create a div for display
                 response.loans.forEach(loan => {
                     const loanDiv = document.createElement('div');
-                    loanDiv.innerHTML = `Book ID: ${loan.book_id}, Customer ID: ${loan.customer_id}, Loan Date: ${loan.loan_date}`;
+                    // Set the innerHTML of the loanDiv with loan information including return date
+                    const returnDateInfo = loan.return_date ? `, Return Date: ${loan.return_date}` : '';
+                    loanDiv.innerHTML = `Book ID: ${loan.book_id}, Customer ID: ${loan.customer_id}, Loan Date: ${loan.loan_date}${returnDateInfo}`;
+                    // Append the loanDiv to the displayLoansDiv
                     displayLoansDiv.appendChild(loanDiv);
                 });
             })
             .catch(error => console.error(error));
     }
+    
     // // Display Late Loans function
     function getLateLoans() {
         makeRequest('GET', '/get_late_loans')
             .then(response => {
-                console.log(response);
+                console.log('Response:', response);
+    
+                // Check for errors in the response
+                if (response.hasOwnProperty('message')) {
+                    console.error(`Error: ${response.message}`);
+                    // Display an error message to the user if needed
+                    return;
+                }
+    
                 // Display late loans in the 'late-loans-results' div
                 const lateLoansDiv = document.getElementById('late-loans-results');
                 lateLoansDiv.innerHTML = '';
@@ -391,11 +407,16 @@ function deleteBook(bookId) {
                 } else {
                     lateLoans.forEach(loan => {
                         const loanDiv = document.createElement('div');
-                        loanDiv.innerHTML = `<strong>Loan ID:</strong> ${loan.id}, <strong>Book ID:</strong> ${loan.book_id}, <strong>Customer ID:</strong> ${loan.customer_id}, <strong>Loan Date:</strong> ${loan.loan_date}, <strong>Return Date:</strong> ${loan.return_date || 'Not returned'}`;
+                        const returnDateInfo = loan.return_date ? `, <strong>Return Date:</strong> ${loan.return_date}` : '<strong>Return Date:</strong> Not returned';
+                        const daysLateInfo = `, <strong>Days Late:</strong> ${loan.days_late}`;
+                        loanDiv.innerHTML = `<strong>Loan ID:</strong> ${loan.id}, <strong>Book ID:</strong> ${loan.book_id}, <strong>Customer ID:</strong> ${loan.customer_id}, <strong>Loan Date:</strong> ${loan.loan_date}${returnDateInfo}${daysLateInfo}`;
                         lateLoansDiv.appendChild(loanDiv);
                     });
                 }
             })
-            .catch(error => console.error(error));
+            .catch(error => {
+                console.error(`Error fetching late loans: ${error}`);
+                // Display an error message to the user if needed
+            });
     }
     

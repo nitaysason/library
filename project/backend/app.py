@@ -370,6 +370,7 @@ def get_all_loans():
     except Exception as e:
         return jsonify({"message": "Error retrieving loans", "error": str(e)}), 500
 
+
 # Add this route to display late loans
 @app.route('/get_late_loans', methods=['GET'])
 def get_late_loans():

@@ -348,6 +348,8 @@ def display_all_customers():
 
 # Add this route to display all loans
 
+
+
 @app.route('/get_all_loans', methods=['GET'])
 def get_all_loans():
     try:
@@ -362,15 +364,16 @@ def get_all_loans():
                 'book_id': loan.BookID,
                 'customer_id': loan.CustID,
                 'loan_date': loan.Loandate.strftime("%Y-%m-%d %H:%M:%S"),
-                'return_date': loan.Returndate.strftime("%Y-%m-%d %H:%M:%S") if loan.Returndate else None,
-                'late_days': calculate_late_days(loan.Returndate) if loan.Returndate else None
+                'return_date': loan.Returndate.strftime("%Y-%m-%d %H:%M:%S") if loan.Returndate else None
             }
+
             loans_list.append(loan_data)
 
         return jsonify({"loans": loans_list}), 200
 
     except Exception as e:
         return jsonify({"message": "Error retrieving loans", "error": str(e)}), 500
+
 
 def calculate_late_days(return_date):
     # Calculate the late days based on the difference between return date and current date

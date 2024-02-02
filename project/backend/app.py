@@ -383,18 +383,22 @@ def calculate_late_days(return_date):
 
 # Add this route to display late loans
 
+from sqlalchemy import or_
 
 @app.route('/get_late_loans', methods=['GET'])
 def get_late_loans():
     try:
-        # Query late loans from the database
-        late_loans = Loan.query.filter(Loan.Returndate < datetime.utcnow()).all()
+        # Query late and not returned loans from the database
+        late_loans = Loan.query.filter(or_(Loan.Returndate < datetime.utcnow(), Loan.Returndate == None)).all()
 
         # Convert the late loans to a list of dictionaries for JSON response
         late_loans_list = []
         for loan in late_loans:
             # Calculate days late
-            days_late = (datetime.utcnow() - loan.Returndate).days if loan.Returndate else None
+            if loan.Returndate:
+                days_late = (loan.Returndate - loan.Loandate).days
+            else:
+                days_late = (datetime.utcnow() - loan.Loandate).days
 
             late_loan_data = {
                 'id': loan.id,
@@ -410,6 +414,8 @@ def get_late_loans():
 
     except Exception as e:
         return jsonify({"message": "Error retrieving late loans", "error": str(e)}), 500
+
+
 
 
 # Add this route to find a book by name

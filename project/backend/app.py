@@ -5,7 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, get_current_user, jwt_required, create_access_token, get_jwt_identity
 from flask_bcrypt import Bcrypt
-from datetime import timedelta
+from datetime import timedelta, datetime
+
 
 
 app = Flask(__name__)
@@ -224,7 +225,7 @@ def delete_book(book_id):
     else:
         return jsonify({"message": "Book not found or unauthorized"}), 404
 
-from flask import request
+# Add this route to loan a book
 
 @app.route('/loan_book/<int:book_id>', methods=['POST'])
 @jwt_required()  # Use this decorator to ensure that the request is authenticated with a valid JWT token
@@ -348,8 +349,6 @@ def display_all_customers():
 
 # Add this route to display all loans
 
-
-
 @app.route('/get_all_loans', methods=['GET'])
 def get_all_loans():
     try:
@@ -382,10 +381,6 @@ def calculate_late_days(return_date):
 
 
 #  this route  display late loans
-
-
-from flask import jsonify
-from datetime import datetime
 
 @app.route('/get_late_loans', methods=['GET'])
 def get_late_loans():
@@ -434,8 +429,6 @@ def get_max_loan_days(book_id):
     else:
         return 0
 
-
-
 # Add this route to find a book by name
 @app.route('/find_book_by_name', methods=['GET'])
 def find_book_by_name():
@@ -467,6 +460,8 @@ def find_book_by_name():
 
     except Exception as e:
         return jsonify({"message": "Error finding books by name", "error": str(e)}), 500
+    
+    
 # Add this route to find a customer by name
 @app.route('/find_customer_by_name', methods=['GET'])
 def find_customer_by_name():

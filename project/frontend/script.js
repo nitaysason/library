@@ -401,16 +401,16 @@ function deleteBook(bookId) {
                 const lateLoansDiv = document.getElementById('late-loans-results');
                 lateLoansDiv.innerHTML = '';
     
-                const lateLoans = response.late_loans.filter(loan => loan.return_date === null);
+                const lateLoans = response.late_loans;
     
                 if (lateLoans.length === 0) {
                     lateLoansDiv.innerHTML = 'No late loans found.';
                 } else {
                     lateLoans.forEach(loan => {
                         const loanDiv = document.createElement('div');
-                        const returnDateInfo = loan.return_date ? `, <strong>Return Date:</strong> ${loan.return_date}` : '<strong>Return Date:</strong> Not returned';
-                        const daysLateInfo = loan.days_late !== null ? `, <strong>Days Late:</strong> ${loan.days_late}` : '';
-                        loanDiv.innerHTML = `<strong>Loan ID:</strong> ${loan.id}, <strong>Book ID:</strong> ${loan.book_id}, <strong>Customer ID:</strong> ${loan.customer_id}, <strong>Loan Date:</strong> ${loan.loan_date}${returnDateInfo}${daysLateInfo}`;
+                        const expectedReturnDateInfo = `<strong>Expected Return Date:</strong> ${loan.expected_return_date}`;
+                        const daysLateInfo = loan.late_days !== null ? `, <strong>Days Late:</strong> ${loan.late_days}` : '';
+                        loanDiv.innerHTML = `<strong>Loan ID:</strong> ${loan.id}, <strong>Book ID:</strong> ${loan.book_id}, <strong>Customer ID:</strong> ${loan.customer_id}, <strong>Loan Date:</strong> ${loan.loan_date}, ${expectedReturnDateInfo}${daysLateInfo}`;
                         lateLoansDiv.appendChild(loanDiv);
                     });
                 }

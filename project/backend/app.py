@@ -381,32 +381,35 @@ def calculate_late_days(return_date):
     return max(0, late_days)
 
 
-# Add this route to display late loans
+#  this route  display late loans
 
-from sqlalchemy import or_
+
+from flask import jsonify
+from datetime import datetime
 
 @app.route('/get_late_loans', methods=['GET'])
 def get_late_loans():
     try:
-        # Query late and not returned loans from the database
-        late_loans = Loan.query.filter(or_(Loan.Returndate < datetime.utcnow(), Loan.Returndate == None)).all()
+        # Query late loans from the database
+        late_loans = Loan.query.filter(Loan.Returndate.is_(None)).all()
 
         # Convert the late loans to a list of dictionaries for JSON response
         late_loans_list = []
         for loan in late_loans:
-            # Calculate days late
-            if loan.Returndate:
-                days_late = (loan.Returndate - loan.Loandate).days
-            else:
-                days_late = (datetime.utcnow() - loan.Loandate).days
+            loan_date = loan.Loandate
+            expected_return_date = loan_date + timedelta(days=get_max_loan_days(loan.BookID))  # Calculate expected return date based on book type
+            current_date = datetime.utcnow()
+
+            # Calculate late days
+            late_days = max(0, (current_date - expected_return_date).days)
 
             late_loan_data = {
                 'id': loan.id,
                 'book_id': loan.BookID,
                 'customer_id': loan.CustID,
-                'loan_date': loan.Loandate.strftime("%Y-%m-%d %H:%M:%S"),
-                'return_date': loan.Returndate.strftime("%Y-%m-%d %H:%M:%S") if loan.Returndate else None,
-                'days_late': days_late
+                'loan_date': loan_date.strftime("%Y-%m-%d %H:%M:%S"),
+                'expected_return_date': expected_return_date.strftime("%Y-%m-%d %H:%M:%S"),
+                'late_days': late_days
             }
             late_loans_list.append(late_loan_data)
 
@@ -415,6 +418,21 @@ def get_late_loans():
     except Exception as e:
         return jsonify({"message": "Error retrieving late loans", "error": str(e)}), 500
 
+def get_max_loan_days(book_id):
+    # Function to get the maximum loan days based on book type
+    book = Book.query.get(book_id)
+    if not book:
+        return 0
+
+    book_type = book.book_type
+    if book_type == 1:
+        return 10
+    elif book_type == 2:
+        return 5
+    elif book_type == 3:
+        return 2
+    else:
+        return 0
 
 
 
